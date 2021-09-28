@@ -1,0 +1,241 @@
+{% extends "navbar.html" %}
+{% block title %}Homepage{% endblock %}
+
+{% block content %}
+
+
+
+
+
+
+
+
+
+
+
+<div style="margin: 0; height: calc(100% - 56px); overflow: hidden">
+
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom"
+        style="margin-top: 20px;">
+        <h1 class="h2">‏‏‎ ‎‏‏‎ ‎Bienvenido {{nombre}} <h3>Hoy es: {{fecha}}‏‏‎ ‎‏‏‎ ‎</h3> </h1>
+
+    </div>
+
+
+
+    <div class="row">
+
+
+        <div class="col-6">
+
+
+            <div class="container">
+                <div class="row form-group" style="overflow-y: scroll; height: calc(83vh);">
+
+                    {% for libro in libros %}
+                    <div class="col-6">
+                        <div class="card mb-3" style="max-width: 540px;">
+                            {% if estado_libro(libro._id) == "Disponible" %}
+                            <div class="badge bg-success text-white position-absolute"
+                                style="bottom: 0.5rem; right: 0.5rem">{{estado_libro(libro._id)}}</div>
+                            {% else %}
+                            <div class="badge bg-danger text-white position-absolute"
+                                style="bottom: 0.5rem; right: 0.5rem">{{estado_libro(libro._id)}}</div>
+                            {% endif %}
+                            <div class="row g-0">
+                                <div class="col-md-4">
+                                    <img src={{libro.fotografia}} class="img-fluid rounded-start" alt="...">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{libro.nombre}}</h5>
+                                        <p class="card-text">{{libro.autor}}</p>
+                                        <p class="card-text"><small class="text-muted"> Id: {{libro._id}}</small>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                </div>
+            </div>
+
+
+        </div>
+
+
+
+        <div class="col align-items-left">
+
+
+            <h2>Realizar Prestamo:</h2>
+            <form action="" method="POST">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+
+                        <input type="number" name="id_libro_prestamo" class="form-control" id="inputEmail4"
+                            placeholder="Id del Libro" required>
+                    </div>
+                    <div class="invalid-feedback">
+                        Debe ingresar un dato
+                    </div>
+
+                    <div class="col-auto">
+                        <button type="submit" id="hacer_prestamo" name="hacer_prestamo"
+                            class="btn btn-primary mb-2">Realizar</button>
+                    </div>
+                </div>
+
+            </form>
+
+
+
+            <h2>Regresar Libro:</h2>
+            <form action="" method="POST">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+
+                        <input type="number" name="id_prestamo" class="form-control" id="inputEmail4"
+                            placeholder="Id Prestamo" required>
+                    </div>
+                    <div class="invalid-feedback">
+                        Debe ingresar un dato
+                    </div>
+
+                    <div class="col-auto">
+                        <button type="submit" id="devolver_libro" name="devolver_libro"
+                            class="btn btn-primary mb-2">Realizar</button>
+                    </div>
+                </div>
+
+            </form>
+
+
+            <h2>Aumentar Fecha Actual:</h2>
+            <form action="" method="POST">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+
+                        <input type="number" name="cantidad_dias" class="form-control" id="inputEmail4"
+                            placeholder="Dias por aumentar" required>
+                    </div>
+                    <div class="invalid-feedback">
+                        Debe ingresar un dato
+                    </div>
+
+                    <div class="col-auto">
+                        <button type="submit" id="aumentar_fecha" name="aumentar_fecha"
+                            class="btn btn-primary mb-2">Realizar</button>
+                    </div>
+                </div>
+
+            </form>
+
+
+
+
+
+
+
+            <h2>Prestamos Actuales:</h2>
+            <div class="table-responsive">
+                <table class="table table-striped table-sm">
+                    <thead>
+                        <tr>
+                            <th scope="col">Id</th>
+                            <th scope="col">Id Libro</th>
+                            <th scope="col">User</th>
+                            <th scope="col">Fecha Prestamo</th>
+                            <th scope="col">Fecha Devolución</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for prestamo in prestamos %}
+                        <tr>
+                            <td>{{prestamo._id}}</td>
+                            <td>{{prestamo.libro}}</td>
+                            <td>{{prestamo.usuario}}</td>
+                            <td>{{prestamo.fecha_prestamo}}</td>
+                            <td>{{prestamo.fecha_devolucion}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+
+    </div>
+
+</div>
+
+
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Mensaje</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="texto_modal">
+                {{mensaje}}
+            </div>
+            <div class="modal-footer">
+                {% if mensaje == "Usted se encuentra con morosidades, por favor proceda a pagarlas" %}               
+                <form action="" method="POST">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="submit" id="pagar_moro" name="pagar_moro" class="btn btn-primary">Pagar Morosidades</button>
+                </form>
+                {% else %}
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="./jquery-3.6.0.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+    integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+    crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+{% for msg in messages %}
+
+<script type="text/javascript">
+
+
+
+    $('#exampleModalCenter').modal({ show: false });
+    $('#exampleModalCenter').modal('show');
+
+
+
+</script>
+
+
+
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+
+
+
+
+{% endblock %}
